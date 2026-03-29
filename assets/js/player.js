@@ -131,83 +131,85 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-  async function attachPlayer() {
-    const video = document.getElementById("videoPlayer");
-    if (!video || !currentEpisode?.stream) return;
+async function attachPlayer() {
+  const video = document.getElementById("videoPlayer");
+  if (!video || !currentEpisode?.stream) return;
 
-    /* cleanup old hls */
-    if (hls) {
-      try {
-        hls.destroy();
-      } catch (e) {}
-      hls = null;
-    }
+  const mediaBase = anime.streamRoot || `${window.location.origin}/`;
+  const streamUrl = new URL(currentEpisode.stream, mediaBase).href;
+  const subtitleUrl = currentEpisode.subtitles
+    ? new URL(currentEpisode.subtitles, mediaBase).href
+    : "";
+  const thumbnailUrl = currentEpisode.thumbnails
+    ? new URL(currentEpisode.thumbnails, mediaBase).href
+    : "";
 
-    /* HLS STREAM */
-    if (currentEpisode.stream.endsWith(".m3u8")) {
-      if (window.Hls && window.Hls.isSupported()) {
-        hls = new window.Hls();
-        hls.loadSource(currentEpisode.stream);
-        hls.attachMedia(video);
-      } else {
-        video.src = currentEpisode.stream;
-      }
-    } else {
-      video.src = currentEpisode.stream;
-    }
-
-    video.load();
-
-    /* TÍCH HỢP PHỤ ĐỀ TIẾNG VIỆT (.vtt) */
-    // Xóa các track phụ đề cũ khi chuyển tập phim
-    video.querySelectorAll("track").forEach(t => video.removeChild(t));
-    
-    // Thêm track phụ đề mới nếu trong JSON có khai báo "subtitles"
-    if (currentEpisode.subtitles) {
-      const track = document.createElement("track");
-      track.kind = "subtitles";
-      track.label = "Tiếng Việt";
-      track.srclang = "vi";
-      track.src = currentEpisode.subtitles;
-      track.default = true; // Tự động bật
-      video.appendChild(track);
-    }
-
-    /* THUMBNAIL PREVIEW */
-    setupThumbnailPreview(video, currentEpisode);
-    
-    /* GHI NHỚ TRẠNG THÁI "CONTINUE WATCHING" VÀO STORAGE */
-    if (window.StreamStorage) {
-      window.StreamStorage.saveWatchState(anime.slug, seasonNumber, episodeNumber);
-    }
-
-    /* CHỈ GÁN SỰ KIỆN 1 LẦN ĐỂ CHỐNG MEMORY LEAK */
-    if (!isVideoEventsAttached) {
-      /* SAVE PROGRESS */
-      video.addEventListener("timeupdate", () => {
-        if (!window.StreamStorage) return;
-
-        window.StreamStorage.saveProgress({
-          slug: anime.slug,
-          season: seasonNumber,
-          episode: episodeNumber,
-          currentTime: video.currentTime,
-          duration: video.duration,
-          completed: false
-        });
-      });
-
-      /* AUTO NEXT EPISODE */
-      video.addEventListener("ended", () => {
-        const next = allEpisodes[currentIndex + 1];
-        if (!next) return;
-
-        window.location.href = window.StreamUI.watchHref(anime, next.seasonNumber, next.number);
-      });
-      
-      isVideoEventsAttached = true;
-    }
+  if (hls) {
+    try {
+      hls.destroy();
+    } catch (e) {}
+    hls = null;
   }
+
+  if (streamUrl.endsWith(".m3u8")) {
+    if (window.Hls && window.Hls.isSupported()) {
+      hls = new window.Hls();
+      hls.loadSource(streamUrl);
+      hls.attachMedia(video);
+    } else {
+      video.src = streamUrl;
+    }
+  } else {
+    video.src = streamUrl;
+  }
+
+  video.load();
+
+  video.querySelectorAll("track").forEach(t => video.removeChild(t));
+
+  if (subtitleUrl) {
+    const track = document.createElement("track");
+    track.kind = "subtitles";
+    track.label = "Tiếng Việt";
+    track.srclang = "vi";
+    track.src = subtitleUrl;
+    track.default = true;
+    video.appendChild(track);
+  }
+
+  setupThumbnailPreview(video, {
+    ...currentEpisode,
+    thumbnails: thumbnailUrl
+  });
+
+  if (window.StreamStorage) {
+    window.StreamStorage.saveWatchState(anime.slug, seasonNumber, episodeNumber);
+  }
+
+  if (!isVideoEventsAttached) {
+    video.addEventListener("timeupdate", () => {
+      if (!window.StreamStorage) return;
+
+      window.StreamStorage.saveProgress({
+        slug: anime.slug,
+        season: seasonNumber,
+        episode: episodeNumber,
+        currentTime: video.currentTime,
+        duration: video.duration,
+        completed: false
+      });
+    });
+
+    video.addEventListener("ended", () => {
+      const next = allEpisodes[currentIndex + 1];
+      if (!next) return;
+
+      window.location.href = window.StreamUI.watchHref(anime, next.seasonNumber, next.number);
+    });
+
+    isVideoEventsAttached = true;
+  }
+}
 
   async function setupThumbnailPreview(video, episode) {
     removeThumbnailPreview();
