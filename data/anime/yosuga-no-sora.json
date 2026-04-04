@@ -16,13 +16,13 @@
                         "title":  "Season 1",
                         "episodes":  [
                                          {
-                                             "number":  12,
-                                             "title":  "Episode 12",
+                                             "number":  1,
+                                             "title":  "Episode 1",
                                              "description":  "",
-                                             "duration":  "27m",
-                                             "stream":  "anime/yosuga-no-sora/s01/e12/master.m3u8",
-                                             "thumbnails":  "anime/yosuga-no-sora/s01/e12/thumbnails.vtt",
-                                             "subtitles":  "anime/yosuga-no-sora/s01/e12/vi-sub.vtt"
+                                             "duration":  "26m",
+                                             "stream":  "anime/yosuga-no-sora/s01/e01/master.m3u8",
+                                             "thumbnails":  "anime/yosuga-no-sora/s01/e01/thumbnails.vtt",
+                                             "subtitles":  "anime/yosuga-no-sora/s01/e01/vi-sub.vtt"
                                          }
                                      ]
                     }
