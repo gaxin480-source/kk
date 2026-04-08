@@ -15,13 +15,13 @@
                         "title":  "Season 1",
                         "episodes":  [
                                          {
-                                             "number":  9,
-                                             "title":  "Episode 9",
+                                             "number":  10,
+                                             "title":  "Episode 10",
                                              "description":  "",
-                                             "duration":  "25m",
-                                             "stream":  "https://pub-dab99a826eda429485b516030cfc5e7d.r2.dev/anime/yosuga-no-sora/s01/e09/master.m3u8",
-                                             "thumbnails":  "https://pub-dab99a826eda429485b516030cfc5e7d.r2.dev/anime/yosuga-no-sora/s01/e09/thumbnails.vtt",
-                                             "subtitles":  "https://pub-dab99a826eda429485b516030cfc5e7d.r2.dev/anime/yosuga-no-sora/s01/e09/vi-sub.vtt",
+                                             "duration":  "26m",
+                                             "stream":  "https://pub-dab99a826eda429485b516030cfc5e7d.r2.dev/anime/yosuga-no-sora/s01/e10/master.m3u8",
+                                             "thumbnails":  "https://pub-dab99a826eda429485b516030cfc5e7d.r2.dev/anime/yosuga-no-sora/s01/e10/thumbnails.vtt",
+                                             "subtitles":  "https://pub-dab99a826eda429485b516030cfc5e7d.r2.dev/anime/yosuga-no-sora/s01/e10/vi-sub.vtt",
                                              "r2Account":  "Acc1"
                                          }
                                      ]
