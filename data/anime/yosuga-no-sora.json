@@ -8,12 +8,102 @@
     "genres":  [
 
                ],
-    "episodes":  1,
+    "episodes":  12,
     "seasons":  [
                     {
                         "seasonNumber":  1,
                         "title":  "Season 1",
                         "episodes":  [
+                                         {
+                                             "number":  1,
+                                             "title":  "Episode 1",
+                                             "description":  "",
+                                             "duration":  "26m",
+                                             "stream":  "https://pub-dab99a826eda429485b516030cfc5e7d.r2.dev/anime/yosuga-no-sora/s01/e01/master.m3u8",
+                                             "thumbnails":  "https://pub-dab99a826eda429485b516030cfc5e7d.r2.dev/anime/yosuga-no-sora/s01/e01/thumbnails.vtt",
+                                             "subtitles":  "https://pub-dab99a826eda429485b516030cfc5e7d.r2.dev/anime/yosuga-no-sora/s01/e01/vi-sub.vtt",
+                                             "r2Account":  "Acc1"
+                                         },
+                                         {
+                                             "number":  2,
+                                             "title":  "Episode 2",
+                                             "description":  "",
+                                             "duration":  "26m",
+                                             "stream":  "https://pub-dab99a826eda429485b516030cfc5e7d.r2.dev/anime/yosuga-no-sora/s01/e02/master.m3u8",
+                                             "thumbnails":  "https://pub-dab99a826eda429485b516030cfc5e7d.r2.dev/anime/yosuga-no-sora/s01/e02/thumbnails.vtt",
+                                             "subtitles":  "https://pub-dab99a826eda429485b516030cfc5e7d.r2.dev/anime/yosuga-no-sora/s01/e02/vi-sub.vtt",
+                                             "r2Account":  "Acc1"
+                                         },
+                                         {
+                                             "number":  3,
+                                             "title":  "Episode 3",
+                                             "description":  "",
+                                             "duration":  "26m",
+                                             "stream":  "https://pub-dab99a826eda429485b516030cfc5e7d.r2.dev/anime/yosuga-no-sora/s01/e03/master.m3u8",
+                                             "thumbnails":  "https://pub-dab99a826eda429485b516030cfc5e7d.r2.dev/anime/yosuga-no-sora/s01/e03/thumbnails.vtt",
+                                             "subtitles":  "https://pub-dab99a826eda429485b516030cfc5e7d.r2.dev/anime/yosuga-no-sora/s01/e03/vi-sub.vtt",
+                                             "r2Account":  "Acc1"
+                                         },
+                                         {
+                                             "number":  4,
+                                             "title":  "Episode 4",
+                                             "description":  "",
+                                             "duration":  "25m",
+                                             "stream":  "https://pub-dab99a826eda429485b516030cfc5e7d.r2.dev/anime/yosuga-no-sora/s01/e04/master.m3u8",
+                                             "thumbnails":  "https://pub-dab99a826eda429485b516030cfc5e7d.r2.dev/anime/yosuga-no-sora/s01/e04/thumbnails.vtt",
+                                             "subtitles":  "https://pub-dab99a826eda429485b516030cfc5e7d.r2.dev/anime/yosuga-no-sora/s01/e04/vi-sub.vtt",
+                                             "r2Account":  "Acc1"
+                                         },
+                                         {
+                                             "number":  5,
+                                             "title":  "Episode 5",
+                                             "description":  "",
+                                             "duration":  "26m",
+                                             "stream":  "https://pub-dab99a826eda429485b516030cfc5e7d.r2.dev/anime/yosuga-no-sora/s01/e05/master.m3u8",
+                                             "thumbnails":  "https://pub-dab99a826eda429485b516030cfc5e7d.r2.dev/anime/yosuga-no-sora/s01/e05/thumbnails.vtt",
+                                             "subtitles":  "https://pub-dab99a826eda429485b516030cfc5e7d.r2.dev/anime/yosuga-no-sora/s01/e05/vi-sub.vtt",
+                                             "r2Account":  "Acc1"
+                                         },
+                                         {
+                                             "number":  6,
+                                             "title":  "Episode 6",
+                                             "description":  "",
+                                             "duration":  "25m",
+                                             "stream":  "https://pub-dab99a826eda429485b516030cfc5e7d.r2.dev/anime/yosuga-no-sora/s01/e06/master.m3u8",
+                                             "thumbnails":  "https://pub-dab99a826eda429485b516030cfc5e7d.r2.dev/anime/yosuga-no-sora/s01/e06/thumbnails.vtt",
+                                             "subtitles":  "https://pub-dab99a826eda429485b516030cfc5e7d.r2.dev/anime/yosuga-no-sora/s01/e06/vi-sub.vtt",
+                                             "r2Account":  "Acc1"
+                                         },
+                                         {
+                                             "number":  7,
+                                             "title":  "Episode 7",
+                                             "description":  "",
+                                             "duration":  "26m",
+                                             "stream":  "https://pub-dab99a826eda429485b516030cfc5e7d.r2.dev/anime/yosuga-no-sora/s01/e07/master.m3u8",
+                                             "thumbnails":  "https://pub-dab99a826eda429485b516030cfc5e7d.r2.dev/anime/yosuga-no-sora/s01/e07/thumbnails.vtt",
+                                             "subtitles":  "https://pub-dab99a826eda429485b516030cfc5e7d.r2.dev/anime/yosuga-no-sora/s01/e07/vi-sub.vtt",
+                                             "r2Account":  "Acc1"
+                                         },
+                                         {
+                                             "number":  8,
+                                             "title":  "Episode 8",
+                                             "description":  "",
+                                             "duration":  "26m",
+                                             "stream":  "https://pub-dab99a826eda429485b516030cfc5e7d.r2.dev/anime/yosuga-no-sora/s01/e08/master.m3u8",
+                                             "thumbnails":  "https://pub-dab99a826eda429485b516030cfc5e7d.r2.dev/anime/yosuga-no-sora/s01/e08/thumbnails.vtt",
+                                             "subtitles":  "https://pub-dab99a826eda429485b516030cfc5e7d.r2.dev/anime/yosuga-no-sora/s01/e08/vi-sub.vtt",
+                                             "r2Account":  "Acc1"
+                                         },
+                                         {
+                                             "number":  9,
+                                             "title":  "Episode 9",
+                                             "description":  "",
+                                             "duration":  "25m",
+                                             "stream":  "https://pub-dab99a826eda429485b516030cfc5e7d.r2.dev/anime/yosuga-no-sora/s01/e09/master.m3u8",
+                                             "thumbnails":  "https://pub-dab99a826eda429485b516030cfc5e7d.r2.dev/anime/yosuga-no-sora/s01/e09/thumbnails.vtt",
+                                             "subtitles":  "https://pub-dab99a826eda429485b516030cfc5e7d.r2.dev/anime/yosuga-no-sora/s01/e09/vi-sub.vtt",
+                                             "r2Account":  "Acc1"
+                                         },
                                          {
                                              "number":  10,
                                              "title":  "Episode 10",
@@ -22,6 +112,26 @@
                                              "stream":  "https://pub-dab99a826eda429485b516030cfc5e7d.r2.dev/anime/yosuga-no-sora/s01/e10/master.m3u8",
                                              "thumbnails":  "https://pub-dab99a826eda429485b516030cfc5e7d.r2.dev/anime/yosuga-no-sora/s01/e10/thumbnails.vtt",
                                              "subtitles":  "https://pub-dab99a826eda429485b516030cfc5e7d.r2.dev/anime/yosuga-no-sora/s01/e10/vi-sub.vtt",
+                                             "r2Account":  "Acc1"
+                                         },
+                                         {
+                                             "number":  11,
+                                             "title":  "Episode 11",
+                                             "description":  "",
+                                             "duration":  "26m",
+                                             "stream":  "https://pub-dab99a826eda429485b516030cfc5e7d.r2.dev/anime/yosuga-no-sora/s01/e11/master.m3u8",
+                                             "thumbnails":  "https://pub-dab99a826eda429485b516030cfc5e7d.r2.dev/anime/yosuga-no-sora/s01/e11/thumbnails.vtt",
+                                             "subtitles":  "https://pub-dab99a826eda429485b516030cfc5e7d.r2.dev/anime/yosuga-no-sora/s01/e11/vi-sub.vtt",
+                                             "r2Account":  "Acc1"
+                                         },
+                                         {
+                                             "number":  12,
+                                             "title":  "Episode 12",
+                                             "description":  "",
+                                             "duration":  "27m",
+                                             "stream":  "https://pub-dab99a826eda429485b516030cfc5e7d.r2.dev/anime/yosuga-no-sora/s01/e12/master.m3u8",
+                                             "thumbnails":  "https://pub-dab99a826eda429485b516030cfc5e7d.r2.dev/anime/yosuga-no-sora/s01/e12/thumbnails.vtt",
+                                             "subtitles":  "https://pub-dab99a826eda429485b516030cfc5e7d.r2.dev/anime/yosuga-no-sora/s01/e12/vi-sub.vtt",
                                              "r2Account":  "Acc1"
                                          }
                                      ]
