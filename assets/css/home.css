@@ -628,3 +628,18 @@
     transition: none;
   }
 }
+
+/* Remove right hero image and stats */
+.hero-card {
+  grid-template-columns: 1fr !important;
+  min-height: 520px !important;
+}
+.hero-side {
+  display: none !important;
+}
+.hero-content {
+  max-width: 780px !important;
+}
+.hero-card::before {
+  background: linear-gradient(90deg, rgba(7,7,12,0.92) 0%, rgba(7,7,12,0.72) 55%, rgba(7,7,12,0.38) 100%), linear-gradient(180deg, transparent 0%, rgba(7,7,12,0.86) 100%) !important;
+}
