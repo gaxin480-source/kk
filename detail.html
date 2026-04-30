@@ -3,28 +3,37 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#090b14" />
+  <meta name="color-scheme" content="dark" />
   <title>Title Details · KageStream</title>
   <meta name="description" content="Title details and episode list." />
   <link rel="stylesheet" href="assets/css/main.css" />
   <link rel="stylesheet" href="assets/css/detail.css" />
 </head>
 <body class="page-detail">
+  <a class="skip-link" href="#detailApp">Skip to details</a>
+
   <header class="site-header">
     <div class="container header-inner">
       <a class="brand" href="index.html" aria-label="KageStream home">
-        <span class="brand-mark"></span>
+        <span class="brand-mark" aria-hidden="true"></span>
         <span class="brand-text">KageStream</span>
       </a>
 
       <nav class="top-nav" aria-label="Primary">
         <a class="nav-link" href="index.html">Home</a>
+        <a class="nav-link active" aria-current="page" href="#detailApp">Details</a>
       </nav>
 
       <a class="header-cta subtle" href="index.html">Library</a>
     </div>
   </header>
 
-  <main id="detailApp" class="detail-app"></main>
+  <main id="detailApp" class="detail-app is-loading" aria-live="polite"></main>
+
+  <noscript>
+    <div class="noscript-banner container">KageStream cần JavaScript để tải chi tiết anime.</div>
+  </noscript>
 
   <script src="assets/js/storage.js" defer></script>
   <script src="assets/js/app.js" defer></script>

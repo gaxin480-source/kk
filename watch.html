@@ -3,28 +3,38 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#05060c" />
+  <meta name="color-scheme" content="dark" />
   <title>Watch · KageStream</title>
   <meta name="description" content="Premium personal streaming player." />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" />
   <link rel="stylesheet" href="assets/css/main.css" />
   <link rel="stylesheet" href="assets/css/watch.css" />
 </head>
 <body class="page-watch">
+  <a class="skip-link" href="#watchApp">Skip to player</a>
+
   <header class="site-header site-header-watch">
     <div class="container header-inner">
       <a class="brand" href="index.html" aria-label="KageStream home">
-        <span class="brand-mark"></span>
+        <span class="brand-mark" aria-hidden="true"></span>
         <span class="brand-text">KageStream</span>
       </a>
 
       <nav class="top-nav" aria-label="Primary">
         <a class="nav-link" href="index.html">Home</a>
+        <a class="nav-link active" aria-current="page" href="#watchApp">Watch</a>
       </nav>
 
       <a class="header-cta subtle" id="backToDetail" href="detail.html?slug=yosuga-no-sora">Details</a>
     </div>
   </header>
 
-  <main id="watchApp" class="watch-app"></main>
+  <main id="watchApp" class="watch-app is-loading" aria-live="polite"></main>
+
+  <noscript>
+    <div class="noscript-banner container">KageStream cần JavaScript để phát video.</div>
+  </noscript>
 
   <script src="assets/js/storage.js" defer></script>
   <script src="assets/libs/hls.min.js" defer></script>

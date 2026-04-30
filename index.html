@@ -3,17 +3,22 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#090b14" />
+  <meta name="color-scheme" content="dark" />
   <title>KageStream</title>
   <meta name="description" content="Personal anime streaming library with a premium dark UI." />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" />
   <link rel="stylesheet" href="assets/css/main.css" />
   <link rel="stylesheet" href="assets/css/home.css" />
   <link rel="icon" type="image/svg+xml" href="assets/media/favicon.svg">
 </head>
 <body class="page-home">
+  <a class="skip-link" href="#mainContent">Skip to content</a>
+
   <header class="site-header">
     <div class="container header-inner">
       <a class="brand" href="index.html" aria-label="KageStream home">
-        <span class="brand-mark"></span>
+        <span class="brand-mark" aria-hidden="true"></span>
         <span class="brand-text">KageStream</span>
       </a>
 
@@ -21,39 +26,49 @@
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M10.5 4a6.5 6.5 0 1 0 0 13a6.5 6.5 0 0 0 0-13Zm0-2a8.5 8.5 0 1 1 5.32 15.12l4.53 4.53l-1.41 1.41l-4.53-4.53A8.5 8.5 0 0 1 10.5 2Z"/>
         </svg>
-        <input id="searchInput" type="search" placeholder="Search your library" />
+        <input id="searchInput" type="search" placeholder="Tìm anime, thể loại, năm..." autocomplete="off" spellcheck="false" aria-controls="animeGrid" />
+        <span class="kbd-hint" aria-hidden="true">/</span>
       </label>
 
       <nav class="top-nav" aria-label="Primary">
-        <a class="nav-link active" href="index.html">Home</a>
+        <a class="nav-link active" aria-current="page" href="index.html">Home</a>
+        <a class="nav-link" href="#animeGrid">Library</a>
       </nav>
 
-      <a class="header-cta" id="headerFeaturedBtn" href="#">Featured</a>
+      <a class="header-cta" id="headerFeaturedBtn" href="#heroSection">Featured</a>
     </div>
   </header>
 
-  <main>
-    <section class="hero-shell container" id="heroSection" aria-label="Featured title"></section>
+  <main id="mainContent">
+    <section class="hero-shell container is-loading" id="heroSection" aria-label="Featured title"></section>
 
     <section class="content-section container">
       <div class="section-head">
         <div>
+          <p class="eyebrow">Fresh picks</p>
           <h2>Trending Now</h2>
         </div>
+        <p class="section-note">Tập mới và nội dung đáng xem trong thư viện.</p>
       </div>
-      <div class="episode-rail" id="trendingRail"></div>
+      <div class="episode-rail is-loading" id="trendingRail" aria-label="Trending anime episodes"></div>
     </section>
 
     <section class="content-section container">
       <div class="section-head section-head-search">
         <div>
+          <p class="eyebrow">Browse everything</p>
           <h2>Anime Library</h2>
         </div>
+        <p class="section-note" id="searchStatus" aria-live="polite">Nhấn <kbd>/</kbd> để tìm nhanh.</p>
       </div>
 
-      <div class="anime-grid" id="animeGrid"></div>
+      <div class="anime-grid is-loading" id="animeGrid" aria-live="polite"></div>
     </section>
   </main>
+
+  <noscript>
+    <div class="noscript-banner container">KageStream cần JavaScript để tải thư viện và video.</div>
+  </noscript>
 
   <script src="assets/js/storage.js" defer></script>
   <script src="assets/js/app.js" defer></script>

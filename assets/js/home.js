@@ -1,14 +1,29 @@
 document.addEventListener("DOMContentLoaded", async () => {
+  document.body.classList.add("page-ready");
+  enhanceGlobalUx();
+
   const heroSection = document.getElementById("heroSection");
   const trendingRail = document.getElementById("trendingRail");
   const animeGrid = document.getElementById("animeGrid");
   const searchInput = document.getElementById("searchInput");
+  const searchStatus = document.getElementById("searchStatus");
+  const featuredBtn = document.getElementById("headerFeaturedBtn");
 
-  const library = await window.StreamUI.loadLibrary();
+  let library = [];
+
+  try {
+    library = await window.StreamUI.loadLibrary();
+  } catch (error) {
+    console.error("home load error:", error);
+  }
+
+  [heroSection, trendingRail, animeGrid].forEach((el) => el?.classList.remove("is-loading"));
+
   const featured = library[0] || null;
 
   if (!library.length) {
     heroSection.innerHTML = `<div class="empty-state">Library unavailable.</div>`;
+    trendingRail.innerHTML = `<div class="empty-state">No episodes available.</div>`;
     animeGrid.innerHTML = `<div class="empty-state">No titles found.</div>`;
     return;
   }
@@ -17,7 +32,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   renderTrending(library);
   renderGrid(library);
 
-  searchInput.addEventListener("input", () => {
+  if (featuredBtn && featured) {
+    featuredBtn.href = window.StreamUI.detailHref(featured);
+  }
+
+  searchInput?.addEventListener("input", () => {
     const term = searchInput.value.trim().toLowerCase();
 
     const filtered = library.filter((anime) => {
@@ -25,6 +44,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         anime.title,
         anime.description,
         anime.year,
+        anime.episodes,
         ...(anime.genres || [])
       ]
         .join(" ")
@@ -34,6 +54,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 
     renderGrid(filtered);
+
+    if (searchStatus) {
+      searchStatus.textContent = term
+        ? `${filtered.length} kết quả cho “${searchInput.value.trim()}”.`
+        : "Nhấn / để tìm nhanh.";
+    }
   });
 
   function renderHero(anime) {
@@ -47,25 +73,41 @@ document.addEventListener("DOMContentLoaded", async () => {
         ? window.StreamUI.watchHref(anime, firstEpisode.season, firstEpisode.episode)
         : window.StreamUI.detailHref(anime);
 
+    const totalSeasons = anime.seasons?.length || 0;
+    const genres = (anime.genres || []).slice(0, 3);
+
     heroSection.innerHTML = `
       <article
         class="hero-card"
         style="background-image:
-          linear-gradient(180deg, rgba(0,0,0,0.15), rgba(0,0,0,0.25)),
-          url('${anime.cover}');
-          background-position: top center; 
-          background-size: cover;" 
+          linear-gradient(180deg, rgba(0,0,0,0.10), rgba(0,0,0,0.20)),
+          url('${escapeAttr(anime.cover || anime.poster || "")}')"
       >
-        <div class="hero-content">
-          <h1 class="hero-title">${window.StreamUI.escapeHtml(anime.title)}</h1>
+        <div class="hero-stats" aria-label="Featured stats">
+          <div class="hero-stat">
+            <small>Episodes</small>
+            <strong>${escapeHtml(anime.episodes || window.StreamUI.flattenEpisodes(anime).length || "—")}</strong>
+          </div>
+          <div class="hero-stat">
+            <small>Seasons</small>
+            <strong>${totalSeasons || "—"}</strong>
+          </div>
+        </div>
 
-          <p class="hero-description">${window.StreamUI.escapeHtml(anime.description)}</p>
+        <div class="hero-content">
+          <div class="hero-meta">
+            ${anime.year ? `<span class="pill">${escapeHtml(anime.year)}</span>` : ""}
+            ${genres.map((genre) => `<span class="pill">${escapeHtml(genre)}</span>`).join("")}
+          </div>
+
+          <h1 class="hero-title">${escapeHtml(anime.title)}</h1>
+          <p class="hero-description">${escapeHtml(anime.description || "")}</p>
 
           <div class="hero-actions">
             <a class="btn btn-primary" href="${continueHref}">
-              ${watchState ? "Continue Watching" : "Play Now"}
+              ${watchState ? "Tiếp tục xem" : "Xem ngay"}
             </a>
-            <a class="btn btn-secondary" href="${window.StreamUI.detailHref(anime)}">View Details</a>
+            <a class="btn btn-secondary" href="${window.StreamUI.detailHref(anime)}">Chi tiết</a>
           </div>
         </div>
       </article>
@@ -83,24 +125,21 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     trendingRail.innerHTML = trendingEpisodes
-      .map(({ anime, ep }) => {
-        return `
-          <a
-            class="rail-card"
-            href="${window.StreamUI.watchHref(anime, ep.seasonNumber, ep.number)}"
-            style="background-image:
-              linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,0.85)),
-              url('${anime.cover}'); 
-              background-position: top center; /* CHỈNH TẠI ĐÂY */
-              background-size: cover;          /* CHỈNH TẠI ĐÂY */
-              position: relative;"
-          >
-            <div class="rail-card-content" style="position: absolute; bottom: 12px; left: 15px; padding: 0;">
-              <h3 style="margin: 0; font-size: 15px; font-weight: 600; text-shadow: 0 2px 4px rgba(0,0,0,0.9); color: #fff;">${window.StreamUI.escapeHtml(ep.title)}</h3>
-            </div>
-          </a>
-        `;
-      })
+      .map(({ anime, ep }) => `
+        <a
+          class="rail-card"
+          href="${window.StreamUI.watchHref(anime, ep.seasonNumber, ep.number)}"
+          style="background-image:
+            linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,0.86)),
+            url('${escapeAttr(anime.cover || anime.poster || "")}')"
+          aria-label="Watch ${escapeAttr(anime.title)} episode ${escapeAttr(ep.number)}"
+        >
+          <div class="rail-card-content">
+            <span class="pill">${window.StreamUI.formatEpisodeLabel(ep.seasonNumber, ep.number)}</span>
+            <h3>${escapeHtml(ep.title || anime.title)}</h3>
+          </div>
+        </a>
+      `)
       .join("");
   }
 
@@ -117,33 +156,38 @@ document.addEventListener("DOMContentLoaded", async () => {
           ? window.StreamStorage.getProgress(anime.slug, watchState.season, watchState.episode)
           : null;
 
+        const firstEpisode = window.StreamUI.getFirstEpisode(anime);
         const continueHref = watchState
           ? window.StreamUI.watchHref(anime, watchState.season, watchState.episode)
-          : window.StreamUI.detailHref(anime);
+          : firstEpisode
+            ? window.StreamUI.watchHref(anime, firstEpisode.season, firstEpisode.episode)
+            : window.StreamUI.detailHref(anime);
+
+        const genres = (anime.genres || []).slice(0, 3);
 
         return `
           <article class="anime-card">
-            <a class="poster-frame" href="${window.StreamUI.detailHref(anime)}" aria-label="${window.StreamUI.escapeHtml(anime.title)} details">
-              <img src="${anime.poster}" alt="${window.StreamUI.escapeHtml(anime.title)} poster" loading="lazy" />
+            <a class="poster-frame" href="${window.StreamUI.detailHref(anime)}" aria-label="${escapeAttr(anime.title)} details">
+              <img src="${escapeAttr(anime.poster || anime.cover || "")}" alt="${escapeAttr(anime.title)} poster" loading="lazy" decoding="async" />
             </a>
 
             <div class="card-topline">
-              <span>${anime.year || ""}</span>
-              <span>${anime.episodes} Episodes</span>
+              <span>${escapeHtml(anime.year || "")}</span>
+              <span>${escapeHtml(anime.episodes || window.StreamUI.flattenEpisodes(anime).length || 0)} tập</span>
             </div>
 
-            <h3 class="card-title">${window.StreamUI.escapeHtml(anime.title)}</h3>
-            <p class="card-description">${window.StreamUI.escapeHtml(anime.description)}</p>
+            <h3 class="card-title">${escapeHtml(anime.title)}</h3>
+            <p class="card-description">${escapeHtml(anime.description || "")}</p>
 
             <div class="pill-row">
-              ${(anime.genres || []).map((genre) => `<span class="pill">${window.StreamUI.escapeHtml(genre)}</span>`).join("")}
+              ${genres.map((genre) => `<span class="pill">${escapeHtml(genre)}</span>`).join("")}
             </div>
 
             ${
               progress
                 ? `
                   <div>
-                    <div class="watch-stamp">Resume</div>
+                    <div class="watch-stamp">Đang xem · ${progress.percent || 0}%</div>
                     <div class="progress-bar" style="margin-top:10px;">
                       <span style="width:${progress.percent || 0}%"></span>
                     </div>
@@ -154,9 +198,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             <div class="card-actions">
               <a class="btn btn-primary" href="${continueHref}">
-                ${watchState ? "Continue" : "Open"}
+                ${watchState ? "Tiếp tục" : "Xem"}
               </a>
-              <a class="btn btn-secondary" href="${window.StreamUI.detailHref(anime)}">Details</a>
+              <a class="btn btn-secondary" href="${window.StreamUI.detailHref(anime)}">Chi tiết</a>
             </div>
           </article>
         `;
@@ -164,3 +208,65 @@ document.addEventListener("DOMContentLoaded", async () => {
       .join("");
   }
 });
+
+function enhanceGlobalUx() {
+  const header = document.querySelector(".site-header");
+  const setHeaderState = () => header?.classList.toggle("is-scrolled", window.scrollY > 8);
+  setHeaderState();
+  window.addEventListener("scroll", setHeaderState, { passive: true });
+
+  const searchInput = document.getElementById("searchInput");
+  if (searchInput) {
+    document.addEventListener("keydown", (event) => {
+      const target = event.target;
+      const isTyping = target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement || target?.isContentEditable;
+
+      if (event.key === "/" && !isTyping) {
+        event.preventDefault();
+        searchInput.focus();
+        searchInput.select();
+      }
+
+      if (event.key === "Escape" && document.activeElement === searchInput) {
+        searchInput.value = "";
+        searchInput.dispatchEvent(new Event("input", { bubbles: true }));
+        searchInput.blur();
+      }
+    });
+  }
+
+  createBackToTop();
+}
+
+function createBackToTop() {
+  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const button = document.createElement("button");
+  button.className = "back-to-top";
+  button.type = "button";
+  button.setAttribute("aria-label", "Back to top");
+  button.textContent = "↑";
+  document.body.appendChild(button);
+
+  const toggle = () => button.classList.toggle("is-visible", window.scrollY > 520);
+  toggle();
+
+  window.addEventListener("scroll", toggle, { passive: true });
+  button.addEventListener("click", () => {
+    window.scrollTo({ top: 0, behavior: prefersReducedMotion ? "auto" : "smooth" });
+  });
+}
+
+function escapeHtml(value = "") {
+  return window.StreamUI?.escapeHtml
+    ? window.StreamUI.escapeHtml(value)
+    : String(value)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+}
+
+function escapeAttr(value = "") {
+  return escapeHtml(value).replaceAll("`", "&#096;");
+}

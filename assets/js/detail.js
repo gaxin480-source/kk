@@ -1,7 +1,12 @@
 document.addEventListener("DOMContentLoaded", async () => {
+  document.body.classList.add("page-ready");
+  enhanceDetailUx();
+
   const app = document.getElementById("detailApp");
   const slug = window.StreamUI.getQueryParam("slug");
   const anime = await window.StreamUI.getAnimeBySlug(slug);
+
+  app?.classList.remove("is-loading");
 
   if (!anime) {
     app.innerHTML = `<div class="container"><div class="empty-state">Title unavailable.</div></div>`;
@@ -24,34 +29,36 @@ document.addEventListener("DOMContentLoaded", async () => {
         ? window.StreamUI.watchHref(anime, firstEpisode.season, firstEpisode.episode)
         : "#";
 
+    const totalEpisodes = window.StreamUI.flattenEpisodes(anime).length || anime.episodes || 0;
+
     app.innerHTML = `
       <div class="container">
         <section
           class="detail-banner"
           style="background-image:
             linear-gradient(180deg, rgba(0,0,0,0.08), rgba(0,0,0,0.18)),
-            url('${anime.cover}')"
+            url('${escapeAttr(anime.cover || anime.poster || "")}')"
         >
           <div class="detail-layout">
             <div class="detail-poster">
-              <img src="${anime.poster}" alt="${window.StreamUI.escapeHtml(anime.title)} poster" />
+              <img src="${escapeAttr(anime.poster || anime.cover || "")}" alt="${escapeAttr(anime.title)} poster" loading="eager" decoding="async" />
             </div>
 
             <div class="detail-copy">
               <div class="pill-row">
-                <span class="pill">${anime.year}</span>
-                <span class="pill">${anime.episodes} Episodes</span>
-                ${(anime.genres || []).map((genre) => `<span class="pill">${window.StreamUI.escapeHtml(genre)}</span>`).join("")}
+                ${anime.year ? `<span class="pill">${escapeHtml(anime.year)}</span>` : ""}
+                <span class="pill">${escapeHtml(totalEpisodes)} tập</span>
+                ${(anime.genres || []).slice(0, 5).map((genre) => `<span class="pill">${escapeHtml(genre)}</span>`).join("")}
               </div>
 
-              <h1 class="detail-title">${window.StreamUI.escapeHtml(anime.title)}</h1>
-              <p class="detail-description">${window.StreamUI.escapeHtml(anime.description)}</p>
+              <h1 class="detail-title">${escapeHtml(anime.title)}</h1>
+              <p class="detail-description">${escapeHtml(anime.description || "")}</p>
 
               <div class="detail-actions">
                 <a class="btn btn-primary" href="${resumeHref}">
-                  ${watchState ? "Continue Watching" : "Start Watching"}
+                  ${watchState ? "Tiếp tục xem" : "Bắt đầu xem"}
                 </a>
-                <a class="btn btn-secondary" href="index.html">Back to Home</a>
+                <a class="btn btn-secondary" href="index.html">Về Home</a>
               </div>
             </div>
           </div>
@@ -59,16 +66,18 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         <section class="detail-content">
           <div class="content-card">
-            <h3>Episodes</h3>
+            <h3>Danh sách tập</h3>
 
-            <div class="season-tabs" id="seasonTabs">
+            <div class="season-tabs" id="seasonTabs" role="tablist" aria-label="Seasons">
               ${anime.seasons.map((season) => `
                 <button
                   class="season-tab ${Number(season.seasonNumber) === Number(activeSeason.seasonNumber) ? "is-active" : ""}"
                   data-season="${season.seasonNumber}"
                   type="button"
+                  role="tab"
+                  aria-selected="${Number(season.seasonNumber) === Number(activeSeason.seasonNumber)}"
                 >
-                  ${window.StreamUI.escapeHtml(season.title || `Season ${season.seasonNumber}`)}
+                  ${escapeHtml(season.title || `Season ${season.seasonNumber}`)}
                 </button>
               `).join("")}
             </div>
@@ -76,21 +85,22 @@ document.addEventListener("DOMContentLoaded", async () => {
             <div class="episode-grid">
               ${activeSeason.episodes.map((episode) => {
                 const progress = window.StreamStorage.getProgress(anime.slug, activeSeason.seasonNumber, episode.number);
+                const watchedText = progress ? `${progress.percent || 0}% đã xem` : "Sẵn sàng phát";
 
                 return `
                   <article class="episode-card">
                     <div class="episode-top">
                       <span>${window.StreamUI.formatEpisodeLabel(activeSeason.seasonNumber, episode.number)}</span>
-                      <span>${window.StreamUI.escapeHtml(episode.duration || "")}</span>
+                      <span>${escapeHtml(episode.duration || "")}</span>
                     </div>
 
-                    <h4>${window.StreamUI.escapeHtml(episode.title)}</h4>
-                    <p>${window.StreamUI.escapeHtml(episode.description)}</p>
+                    <h4>${escapeHtml(episode.title || anime.title)}</h4>
+                    <p>${escapeHtml(episode.description || anime.description || "")}</p>
 
                     ${
                       progress
                         ? `
-                          <div class="progress-bar" style="margin-bottom:14px;">
+                          <div class="progress-bar" aria-label="${progress.percent || 0}% watched">
                             <span style="width:${progress.percent || 0}%"></span>
                           </div>
                         `
@@ -98,7 +108,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     }
 
                     <div class="episode-card-footer">
-                      <span class="pill">${progress ? `${progress.percent || 0}% watched` : "Ready to play"}</span>
+                      <span class="pill">${watchedText}</span>
                       <a
                         class="btn btn-primary"
                         href="${window.StreamUI.watchHref(anime, activeSeason.seasonNumber, episode.number)}"
@@ -118,19 +128,23 @@ document.addEventListener("DOMContentLoaded", async () => {
               <div class="stat-list">
                 <div class="stat-item">
                   <small>Title</small>
-                  <strong>${window.StreamUI.escapeHtml(anime.title)}</strong>
+                  <strong>${escapeHtml(anime.title)}</strong>
                 </div>
                 <div class="stat-item">
                   <small>Genres</small>
-                  <strong>${window.StreamUI.escapeHtml(window.StreamUI.genresLine(anime.genres))}</strong>
+                  <strong>${escapeHtml(window.StreamUI.genresLine(anime.genres || [])) || "—"}</strong>
                 </div>
                 <div class="stat-item">
-                  <small>Season Count</small>
+                  <small>Seasons</small>
                   <strong>${anime.seasons.length}</strong>
                 </div>
                 <div class="stat-item">
+                  <small>Episodes</small>
+                  <strong>${escapeHtml(totalEpisodes)}</strong>
+                </div>
+                <div class="stat-item">
                   <small>Release Year</small>
-                  <strong>${anime.year}</strong>
+                  <strong>${escapeHtml(anime.year || "—")}</strong>
                 </div>
               </div>
             </div>
@@ -156,8 +170,50 @@ document.addEventListener("DOMContentLoaded", async () => {
             season: activeSeason.seasonNumber
           }));
           render();
+          document.querySelector(".detail-content")?.scrollIntoView({ behavior: "smooth", block: "start" });
         }
       });
     });
   }
 });
+
+function enhanceDetailUx() {
+  const header = document.querySelector(".site-header");
+  const setHeaderState = () => header?.classList.toggle("is-scrolled", window.scrollY > 8);
+  setHeaderState();
+  window.addEventListener("scroll", setHeaderState, { passive: true });
+  createBackToTop();
+}
+
+function createBackToTop() {
+  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const button = document.createElement("button");
+  button.className = "back-to-top";
+  button.type = "button";
+  button.setAttribute("aria-label", "Back to top");
+  button.textContent = "↑";
+  document.body.appendChild(button);
+
+  const toggle = () => button.classList.toggle("is-visible", window.scrollY > 520);
+  toggle();
+
+  window.addEventListener("scroll", toggle, { passive: true });
+  button.addEventListener("click", () => {
+    window.scrollTo({ top: 0, behavior: prefersReducedMotion ? "auto" : "smooth" });
+  });
+}
+
+function escapeHtml(value = "") {
+  return window.StreamUI?.escapeHtml
+    ? window.StreamUI.escapeHtml(value)
+    : String(value)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+}
+
+function escapeAttr(value = "") {
+  return escapeHtml(value).replaceAll("`", "&#096;");
+}
