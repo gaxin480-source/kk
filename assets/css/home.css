@@ -1,110 +1,228 @@
 .hero-shell {
-  margin-top: 20px;
+  margin-top: 18px;
 }
+
+/* HERO */
 
 .hero-card {
   position: relative;
-  min-height: clamp(390px, 52vw, 560px);
+  min-height: 520px;
+  padding: clamp(22px, 3vw, 34px);
   display: grid;
-  align-items: end;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 0.82fr);
+  gap: clamp(20px, 3vw, 40px);
+  align-items: center;
   overflow: hidden;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-xl);
-  background-color: #10131f;
-  background-size: cover;
-  background-position: center;
-  box-shadow: var(--shadow);
-  isolation: isolate;
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at 82% 20%, rgba(255, 186, 222, 0.18), transparent 34%),
+    radial-gradient(circle at 12% 18%, rgba(143, 124, 255, 0.20), transparent 34%),
+    linear-gradient(135deg, rgba(20, 20, 30, 0.98), rgba(7, 7, 12, 0.98));
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow:
+    0 28px 80px rgba(0, 0, 0, 0.48),
+    0 0 0 1px rgba(255, 255, 255, 0.04) inset;
 }
 
 .hero-card::before {
   content: "";
   position: absolute;
   inset: 0;
-  z-index: -1;
+  z-index: 1;
+  pointer-events: none;
   background:
-    radial-gradient(circle at 76% 18%, rgba(255, 95, 162, 0.28), transparent 28rem),
-    linear-gradient(90deg, rgba(7, 9, 18, 0.96), rgba(7, 9, 18, 0.62) 52%, rgba(7, 9, 18, 0.18)),
-    linear-gradient(180deg, transparent 40%, rgba(7, 9, 18, 0.92));
+    linear-gradient(90deg, rgba(7, 7, 12, 0.92) 0%, rgba(7, 7, 12, 0.70) 42%, rgba(7, 7, 12, 0.16) 100%),
+    linear-gradient(180deg, transparent 0%, rgba(7, 7, 12, 0.84) 100%);
 }
 
 .hero-card::after {
   content: "";
   position: absolute;
-  inset: 1px;
-  border-radius: calc(var(--radius-xl) - 1px);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.10);
+  inset: auto 4% -44% auto;
+  width: 540px;
+  height: 540px;
+  border-radius: 999px;
   pointer-events: none;
+  background: radial-gradient(circle, rgba(143, 124, 255, 0.24), transparent 68%);
+  filter: blur(26px);
+}
+
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: 0.42;
+  filter: blur(2px) saturate(1.1);
+}
+
+.hero-bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
 }
 
 .hero-content {
   position: relative;
-  z-index: 1;
-  max-width: 760px;
-  padding: clamp(24px, 4vw, 42px);
+  z-index: 2;
+  max-width: 740px;
+}
+
+.hero-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 38px;
+  margin-bottom: 18px;
+  padding: 0 14px;
+  border-radius: 999px;
+  color: var(--highlight);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.hero-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--accent), var(--highlight));
+  box-shadow: 0 0 20px rgba(255, 186, 222, 0.55);
+}
+
+.hero-title {
+  margin: 0;
+  max-width: 800px;
+  font-size: clamp(2.5rem, 6vw, 5.4rem);
+  line-height: 0.92;
+  letter-spacing: -0.075em;
+  text-wrap: balance;
+}
+
+.hero-description {
+  margin: 20px 0 0;
+  max-width: 680px;
+  color: var(--text-soft);
+  font-size: clamp(0.98rem, 1.4vw, 1.08rem);
+  line-height: 1.75;
 }
 
 .hero-meta {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  margin-bottom: 16px;
+  margin-top: 20px;
 }
 
-.hero-title {
-  margin: 0 0 16px;
-  font-size: clamp(2.2rem, 6vw, 5.4rem);
-  line-height: 0.92;
-  letter-spacing: -0.07em;
-}
-
-.hero-description {
-  margin: 0 0 24px;
-  max-width: 720px;
-  color: var(--text-soft);
-  line-height: 1.75;
-  font-size: clamp(0.98rem, 1.2vw, 1.08rem);
+.hero-meta span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 0 13px;
+  border-radius: 999px;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.075);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  font-size: 0.9rem;
+  font-weight: 650;
 }
 
 .hero-actions {
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
+  margin-top: 28px;
 }
 
-.hero-stats {
-  position: absolute;
-  right: clamp(18px, 3vw, 34px);
-  top: clamp(18px, 3vw, 34px);
+.hero-actions .btn {
+  min-width: 132px;
+}
+
+.hero-side {
+  position: relative;
   z-index: 2;
   display: grid;
-  gap: 10px;
-  width: min(250px, 38vw);
+  gap: 16px;
+  align-self: stretch;
+  min-width: 0;
+}
+
+.hero-media {
+  position: relative;
+  min-height: 380px;
+  height: 100%;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 26px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.10), rgba(255, 255, 255, 0.03)),
+    rgba(0, 0, 0, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow:
+    0 26px 70px rgba(0, 0, 0, 0.38),
+    0 0 50px rgba(143, 124, 255, 0.14);
+}
+
+.hero-media::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.08), transparent 28%),
+    radial-gradient(circle at 50% 0%, rgba(255, 186, 222, 0.16), transparent 42%);
+}
+
+.hero-media img {
+  position: relative;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  max-height: 470px;
+  object-fit: contain;
+  object-position: center top;
+  display: block;
+}
+
+.hero-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
 }
 
 .hero-stat {
-  padding: 14px 16px;
-  border: 1px solid var(--line);
+  min-height: 82px;
+  display: grid;
+  align-content: center;
+  gap: 7px;
+  padding: 16px;
   border-radius: 20px;
-  background: rgba(7, 9, 18, 0.52);
-  backdrop-filter: blur(14px);
+  background: rgba(255, 255, 255, 0.105);
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  backdrop-filter: blur(10px);
 }
 
 .hero-stat small {
-  display: block;
   color: var(--muted);
-  margin-bottom: 5px;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  letter-spacing: 0.12em;
-  font-size: 0.68rem;
-  font-weight: 850;
 }
 
 .hero-stat strong {
-  display: block;
   color: var(--text);
-  font-size: 0.98rem;
+  font-size: 1.2rem;
 }
+
+/* TRENDING */
 
 .episode-rail {
   display: grid;
@@ -113,59 +231,90 @@
 }
 
 .rail-card {
-  grid-column: span 4;
+  grid-column: span 3;
   position: relative;
-  min-height: 220px;
+  min-height: 210px;
+  display: flex;
+  align-items: flex-end;
   overflow: hidden;
-  border: 1px solid var(--line);
-  border-radius: 26px;
-  background-color: #11131e;
-  background-size: cover;
-  background-position: center;
-  box-shadow: var(--shadow-soft);
-  isolation: isolate;
-  transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition), filter var(--transition);
+  border-radius: 24px;
+  background: #101019;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.34);
+  transition:
+    transform var(--transition),
+    border-color var(--transition),
+    box-shadow var(--transition);
 }
 
 .rail-card:hover {
   transform: translateY(-6px);
-  border-color: rgba(143, 124, 255, 0.36);
-  box-shadow: 0 22px 56px rgba(0, 0, 0, 0.36);
-  filter: saturate(1.08);
+  border-color: rgba(143, 124, 255, 0.38);
+  box-shadow:
+    0 24px 54px rgba(0, 0, 0, 0.42),
+    0 0 32px rgba(143, 124, 255, 0.12);
+}
+
+.rail-cover {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  transform: scale(1.03);
+  transition: transform 420ms ease;
+}
+
+.rail-card:hover .rail-cover {
+  transform: scale(1.08);
 }
 
 .rail-card::before {
   content: "";
   position: absolute;
   inset: 0;
-  z-index: -1;
+  z-index: 1;
   background:
-    radial-gradient(circle at 70% 16%, rgba(255, 95, 162, 0.16), transparent 18rem),
-    linear-gradient(180deg, rgba(7, 9, 18, 0.08), rgba(7, 9, 18, 0.86));
+    linear-gradient(180deg, rgba(8, 8, 12, 0.04), rgba(8, 8, 12, 0.86)),
+    radial-gradient(circle at 50% 0%, rgba(255, 186, 222, 0.10), transparent 46%);
 }
 
 .rail-card-content {
-  position: absolute;
-  inset: auto 16px 16px;
-  z-index: 1;
+  position: relative;
+  z-index: 2;
+  width: 100%;
   display: grid;
-  gap: 8px;
+  gap: 7px;
+  padding: 18px;
+}
+
+.rail-label {
+  width: fit-content;
+  padding: 6px 10px;
+  border-radius: 999px;
+  color: #fff;
+  background: rgba(143, 124, 255, 0.34);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  font-size: 0.72rem;
+  font-weight: 850;
 }
 
 .rail-card h3 {
   margin: 0;
-  font-size: 1.04rem;
+  color: #fff;
+  font-size: 1rem;
   line-height: 1.25;
-  text-shadow: 0 2px 16px rgba(0,0,0,0.6);
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.72);
 }
 
-.rail-card .pill {
-  width: fit-content;
-  min-height: 30px;
-  font-size: 0.82rem;
-  color: #fff;
-  background: rgba(0,0,0,0.28);
+.rail-card p {
+  margin: 0;
+  color: rgba(245, 247, 255, 0.76);
+  font-size: 0.88rem;
 }
+
+/* ANIME GRID */
 
 .anime-grid {
   display: grid;
@@ -175,55 +324,41 @@
 
 .anime-card {
   grid-column: span 3;
-  position: relative;
   display: flex;
   flex-direction: column;
-  gap: 13px;
   overflow: hidden;
-  padding: 12px;
-  border: 1px solid var(--line);
-  border-radius: 26px;
+  border-radius: 24px;
   background:
-    linear-gradient(180deg, rgba(255,255,255,0.065), rgba(255,255,255,0.025)),
-    linear-gradient(180deg, rgba(18, 21, 34, 0.96), rgba(10, 12, 22, 0.98));
-  box-shadow: var(--shadow-soft);
-  transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.025)),
+    linear-gradient(180deg, #171720, #101017);
+  border: 1px solid var(--line);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.35);
+  transition:
+    transform var(--transition),
+    border-color var(--transition),
+    box-shadow var(--transition);
 }
 
 .anime-card:hover {
   transform: translateY(-6px);
-  border-color: rgba(143, 124, 255, 0.38);
-  box-shadow: 0 26px 64px rgba(0, 0, 0, 0.36);
+  border-color: rgba(143, 124, 255, 0.34);
+  box-shadow:
+    0 24px 56px rgba(0, 0, 0, 0.45),
+    0 0 34px rgba(143, 124, 255, 0.11);
 }
 
 .poster-frame {
   position: relative;
   aspect-ratio: 3 / 4;
   overflow: hidden;
-  border-radius: 20px;
-  background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
-  border: 1px solid rgba(255,255,255,0.07);
-}
-
-.poster-frame::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(180deg, transparent 62%, rgba(0,0,0,0.44)),
-    radial-gradient(circle at 50% 0%, rgba(255,255,255,0.08), transparent 18rem);
-  opacity: 0;
-  transition: opacity var(--transition);
-}
-
-.anime-card:hover .poster-frame::after {
-  opacity: 1;
+  background: #101019;
 }
 
 .poster-frame img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center top;
   transition: transform 420ms ease;
 }
 
@@ -231,21 +366,52 @@
   transform: scale(1.04);
 }
 
-.card-topline,
-.quick-meta {
-  display: flex;
+.poster-frame::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 54%, rgba(8, 8, 12, 0.64));
+  pointer-events: none;
+}
+
+.poster-badge {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  z-index: 2;
+  min-height: 34px;
+  display: inline-flex;
   align-items: center;
+  padding: 0 12px;
+  border-radius: 999px;
+  color: #fff;
+  background: linear-gradient(135deg, rgba(143, 124, 255, 0.92), rgba(255, 186, 222, 0.74));
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.34);
+  font-size: 0.78rem;
+  font-weight: 850;
+}
+
+.card-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px;
+}
+
+.card-topline {
+  display: flex;
   justify-content: space-between;
-  gap: 8px;
+  gap: 10px;
   color: var(--muted);
-  font-size: 0.86rem;
+  font-size: 0.84rem;
 }
 
 .card-title {
   margin: 0;
-  font-size: 1.05rem;
-  line-height: 1.32;
-  letter-spacing: -0.02em;
+  color: var(--text);
+  font-size: 1.02rem;
+  line-height: 1.35;
 }
 
 .card-description {
@@ -254,33 +420,32 @@
   font-size: 0.92rem;
   line-height: 1.62;
   display: -webkit-box;
-  -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
-.anime-card .pill-row {
-  gap: 7px;
+.card-genres {
+  gap: 8px;
 }
 
-.anime-card .pill {
-  min-height: 29px;
-  padding-inline: 10px;
+.card-genres .pill {
+  min-height: 32px;
+  padding-inline: 11px;
   font-size: 0.78rem;
+}
+
+.resume-block {
+  display: grid;
+  gap: 9px;
+  margin-top: auto;
 }
 
 .watch-stamp {
-  display: inline-flex;
-  width: fit-content;
-  min-height: 28px;
-  padding: 0 10px;
-  align-items: center;
-  border-radius: 999px;
-  color: #fff;
-  background: rgba(109, 240, 194, 0.14);
-  border: 1px solid rgba(109, 240, 194, 0.24);
-  font-size: 0.78rem;
-  font-weight: 850;
+  color: var(--highlight);
+  font-size: 0.8rem;
+  font-weight: 800;
 }
 
 .card-actions {
@@ -291,69 +456,70 @@
 
 .card-actions .btn {
   flex: 1;
-  min-height: 44px;
-  padding-inline: 12px;
+  height: 44px;
+  padding-inline: 14px;
 }
 
-@media (max-width: 1160px) {
+/* TABLET */
+
+@media (max-width: 1180px) {
+  .hero-card {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-card::before {
+    background:
+      linear-gradient(180deg, rgba(7, 7, 12, 0.86), rgba(7, 7, 12, 0.52), rgba(7, 7, 12, 0.88));
+  }
+
+  .hero-side {
+    grid-template-columns: minmax(0, 1fr) 220px;
+    align-items: stretch;
+  }
+
+  .hero-media {
+    min-height: 320px;
+  }
+
+  .hero-stat-grid {
+    grid-template-columns: 1fr;
+  }
+
   .anime-card {
     grid-column: span 4;
   }
 
   .rail-card {
-    grid-column: span 6;
+    grid-column: span 4;
   }
 }
 
-@media (max-width: 840px) {
-  .hero-card {
-    min-height: 380px;
-  }
-
-  .hero-stats {
-    display: none;
-  }
-
-  .episode-rail {
-    display: flex;
-    overflow-x: auto;
-    gap: 12px;
-    padding-bottom: 4px;
-    scroll-snap-type: x proximity;
-  }
-
+@media (max-width: 900px) {
   .rail-card {
-    min-width: min(76vw, 320px);
-    min-height: 180px;
-    flex: 0 0 auto;
-    scroll-snap-align: start;
-  }
-
-  .anime-card {
     grid-column: span 6;
   }
 }
 
-@media (max-width: 560px) {
+/* MOBILE */
+
+@media (max-width: 760px) {
+  .hero-shell {
+    margin-top: 12px;
+  }
+
   .hero-card {
-    min-height: 340px;
+    min-height: auto;
+    padding: 18px;
     border-radius: 24px;
   }
 
-  .hero-content {
-    padding: 20px;
-  }
-
   .hero-title {
-    font-size: 2.15rem;
+    font-size: clamp(2.2rem, 15vw, 3.6rem);
   }
 
   .hero-description {
-    font-size: 0.92rem;
-    -webkit-line-clamp: 4;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+    font-size: 0.94rem;
+    line-height: 1.65;
   }
 
   .hero-actions {
@@ -364,6 +530,43 @@
     width: 100%;
   }
 
+  .hero-side {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-media {
+    min-height: 260px;
+    border-radius: 20px;
+  }
+
+  .hero-media img {
+    max-height: 320px;
+  }
+
+  .hero-stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .episode-rail {
+    display: flex;
+    overflow-x: auto;
+    gap: 12px;
+    padding-bottom: 8px;
+    scroll-snap-type: x mandatory;
+  }
+
+  .rail-card {
+    min-width: 230px;
+    min-height: 150px;
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+    border-radius: 18px;
+  }
+
+  .rail-card-content {
+    padding: 13px;
+  }
+
   .anime-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px;
@@ -371,30 +574,57 @@
 
   .anime-card {
     grid-column: auto;
-    padding: 9px;
-    border-radius: 20px;
+    border-radius: 18px;
   }
 
-  .poster-frame {
-    border-radius: 15px;
+  .card-body {
+    padding: 10px;
+    gap: 9px;
   }
 
   .card-description,
-  .anime-card .pill-row,
-  .quick-meta {
+  .card-genres {
     display: none;
   }
 
   .card-title {
-    font-size: 0.94rem;
+    font-size: 0.92rem;
+  }
+
+  .card-topline {
+    font-size: 0.76rem;
   }
 
   .card-actions {
-    gap: 7px;
+    gap: 8px;
   }
 
   .card-actions .btn {
-    min-height: 38px;
-    font-size: 0.84rem;
+    height: 39px;
+    padding-inline: 10px;
+    font-size: 0.86rem;
+  }
+}
+
+@media (max-width: 430px) {
+  .hero-stat-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .anime-grid {
+    gap: 10px;
+  }
+
+  .rail-card {
+    min-width: 210px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rail-card,
+  .rail-cover,
+  .anime-card,
+  .poster-frame img {
+    transition: none;
   }
 }

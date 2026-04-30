@@ -1,107 +1,121 @@
 document.addEventListener("DOMContentLoaded", async () => {
-  document.body.classList.add("page-ready");
-  enhanceGlobalUx();
-
   const heroSection = document.getElementById("heroSection");
   const trendingRail = document.getElementById("trendingRail");
   const animeGrid = document.getElementById("animeGrid");
   const searchInput = document.getElementById("searchInput");
-  const searchStatus = document.getElementById("searchStatus");
-  const featuredBtn = document.getElementById("headerFeaturedBtn");
+  const featuredButton = document.getElementById("headerFeaturedBtn");
+
+  if (!heroSection || !trendingRail || !animeGrid) return;
 
   let library = [];
 
   try {
     library = await window.StreamUI.loadLibrary();
   } catch (error) {
-    console.error("home load error:", error);
+    console.error("load library error:", error);
+    renderUnavailable();
+    return;
   }
-
-  [heroSection, trendingRail, animeGrid].forEach((el) => el?.classList.remove("is-loading"));
 
   const featured = library[0] || null;
 
   if (!library.length) {
-    heroSection.innerHTML = `<div class="empty-state">Library unavailable.</div>`;
-    trendingRail.innerHTML = `<div class="empty-state">No episodes available.</div>`;
-    animeGrid.innerHTML = `<div class="empty-state">No titles found.</div>`;
+    renderUnavailable();
     return;
   }
 
   renderHero(featured);
   renderTrending(library);
   renderGrid(library);
+  bindSearch(library);
 
-  if (featuredBtn && featured) {
-    featuredBtn.href = window.StreamUI.detailHref(featured);
+  function escapeHtml(value = "") {
+    if (window.StreamUI?.escapeHtml) return window.StreamUI.escapeHtml(value);
+    return String(value)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
   }
 
-  searchInput?.addEventListener("input", () => {
-    const term = searchInput.value.trim().toLowerCase();
+  function normalize(value = "") {
+    return String(value)
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "");
+  }
 
-    const filtered = library.filter((anime) => {
-      const haystack = [
-        anime.title,
-        anime.description,
-        anime.year,
-        anime.episodes,
-        ...(anime.genres || [])
-      ]
-        .join(" ")
-        .toLowerCase();
+  function getEpisodeTotal(anime) {
+    if (anime?.episodes) return anime.episodes;
+    return (anime?.seasons || []).reduce((total, season) => total + (season.episodes || []).length, 0);
+  }
 
-      return haystack.includes(term);
-    });
+  function getSeasonTotal(anime) {
+    return anime?.seasons?.length || 0;
+  }
 
-    renderGrid(filtered);
+  function getImage(anime, type = "cover") {
+    if (!anime) return "";
+    return type === "poster"
+      ? anime.poster || anime.cover || ""
+      : anime.cover || anime.poster || "";
+  }
 
-    if (searchStatus) {
-      searchStatus.textContent = term
-        ? `${filtered.length} kết quả cho “${searchInput.value.trim()}”.`
-        : "Nhấn / để tìm nhanh.";
-    }
-  });
-
-  function renderHero(anime) {
-    if (!anime) return;
-
+  function getContinueHref(anime) {
     const firstEpisode = window.StreamUI.getFirstEpisode(anime);
     const watchState = window.StreamStorage.getWatchState(anime.slug);
-    const continueHref = watchState
+
+    return watchState
       ? window.StreamUI.watchHref(anime, watchState.season, watchState.episode)
       : firstEpisode
         ? window.StreamUI.watchHref(anime, firstEpisode.season, firstEpisode.episode)
         : window.StreamUI.detailHref(anime);
+  }
 
-    const totalSeasons = anime.seasons?.length || 0;
-    const genres = (anime.genres || []).slice(0, 3);
+  function renderUnavailable() {
+    heroSection.innerHTML = `<div class="empty-state">Library unavailable.</div>`;
+    trendingRail.innerHTML = `<div class="empty-state">No episodes available.</div>`;
+    animeGrid.innerHTML = `<div class="empty-state">No titles found.</div>`;
+  }
+
+  function renderHero(anime) {
+    if (!anime) return;
+
+    const watchState = window.StreamStorage.getWatchState(anime.slug);
+    const continueHref = getContinueHref(anime);
+    const cover = getImage(anime, "cover");
+    const poster = getImage(anime, "poster");
+    const genres = anime.genres || [];
+    const episodeTotal = getEpisodeTotal(anime);
+    const seasonTotal = getSeasonTotal(anime);
+
+    if (featuredButton) {
+      featuredButton.href = continueHref;
+      featuredButton.textContent = watchState ? "Continue" : "Featured";
+    }
 
     heroSection.innerHTML = `
-      <article
-        class="hero-card"
-        style="background-image:
-          linear-gradient(180deg, rgba(0,0,0,0.10), rgba(0,0,0,0.20)),
-          url('${escapeAttr(anime.cover || anime.poster || "")}')"
-      >
-        <div class="hero-stats" aria-label="Featured stats">
-          <div class="hero-stat">
-            <small>Episodes</small>
-            <strong>${escapeHtml(anime.episodes || window.StreamUI.flattenEpisodes(anime).length || "—")}</strong>
-          </div>
-          <div class="hero-stat">
-            <small>Seasons</small>
-            <strong>${totalSeasons || "—"}</strong>
-          </div>
+      <article class="hero-card">
+        <div class="hero-bg" aria-hidden="true">
+          <img src="${escapeHtml(cover)}" alt="" />
         </div>
 
         <div class="hero-content">
-          <div class="hero-meta">
-            ${anime.year ? `<span class="pill">${escapeHtml(anime.year)}</span>` : ""}
-            ${genres.map((genre) => `<span class="pill">${escapeHtml(genre)}</span>`).join("")}
+          <div class="hero-kicker">
+            <span class="hero-dot" aria-hidden="true"></span>
+            Featured anime
           </div>
 
           <h1 class="hero-title">${escapeHtml(anime.title)}</h1>
+
           <p class="hero-description">${escapeHtml(anime.description || "")}</p>
+
+          <div class="hero-meta">
+            ${anime.year ? `<span>${escapeHtml(anime.year)}</span>` : ""}
+            ${episodeTotal ? `<span>${episodeTotal} tập</span>` : ""}
+            ${genres.slice(0, 3).map((genre) => `<span>${escapeHtml(genre)}</span>`).join("")}
+          </div>
 
           <div class="hero-actions">
             <a class="btn btn-primary" href="${continueHref}">
@@ -110,14 +124,36 @@ document.addEventListener("DOMContentLoaded", async () => {
             <a class="btn btn-secondary" href="${window.StreamUI.detailHref(anime)}">Chi tiết</a>
           </div>
         </div>
+
+        <aside class="hero-side" aria-label="Featured image and stats">
+          <figure class="hero-media">
+            <img src="${escapeHtml(cover || poster)}" alt="${escapeHtml(anime.title)} cover" />
+          </figure>
+
+          <div class="hero-stat-grid">
+            <div class="hero-stat">
+              <small>Episodes</small>
+              <strong>${episodeTotal || "—"}</strong>
+            </div>
+            <div class="hero-stat">
+              <small>Seasons</small>
+              <strong>${seasonTotal || "—"}</strong>
+            </div>
+          </div>
+        </aside>
       </article>
     `;
   }
 
   function renderTrending(items) {
     const trendingEpisodes = items
-      .flatMap((anime) => window.StreamUI.flattenEpisodes(anime).map((ep) => ({ anime, ep })))
-      .slice(0, 6);
+      .flatMap((anime) =>
+        window.StreamUI.flattenEpisodes(anime).map((ep) => ({
+          anime,
+          ep
+        }))
+      )
+      .slice(0, 8);
 
     if (!trendingEpisodes.length) {
       trendingRail.innerHTML = `<div class="empty-state">No episodes available.</div>`;
@@ -125,21 +161,28 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     trendingRail.innerHTML = trendingEpisodes
-      .map(({ anime, ep }) => `
-        <a
-          class="rail-card"
-          href="${window.StreamUI.watchHref(anime, ep.seasonNumber, ep.number)}"
-          style="background-image:
-            linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,0.86)),
-            url('${escapeAttr(anime.cover || anime.poster || "")}')"
-          aria-label="Watch ${escapeAttr(anime.title)} episode ${escapeAttr(ep.number)}"
-        >
-          <div class="rail-card-content">
-            <span class="pill">${window.StreamUI.formatEpisodeLabel(ep.seasonNumber, ep.number)}</span>
-            <h3>${escapeHtml(ep.title || anime.title)}</h3>
-          </div>
-        </a>
-      `)
+      .map(({ anime, ep }) => {
+        const cover = getImage(anime, "cover");
+        const label = window.StreamUI.formatEpisodeLabel
+          ? window.StreamUI.formatEpisodeLabel(ep.seasonNumber, ep.number)
+          : `S${ep.seasonNumber} · E${ep.number}`;
+
+        return `
+          <a
+            class="rail-card"
+            href="${window.StreamUI.watchHref(anime, ep.seasonNumber, ep.number)}"
+            aria-label="Watch ${escapeHtml(anime.title)} ${escapeHtml(label)}"
+          >
+            <img class="rail-cover" src="${escapeHtml(cover)}" alt="" loading="lazy" />
+
+            <div class="rail-card-content">
+              <span class="rail-label">${escapeHtml(label)}</span>
+              <h3>${escapeHtml(ep.title || anime.title)}</h3>
+              <p>${escapeHtml(anime.title)}</p>
+            </div>
+          </a>
+        `;
+      })
       .join("");
   }
 
@@ -156,70 +199,91 @@ document.addEventListener("DOMContentLoaded", async () => {
           ? window.StreamStorage.getProgress(anime.slug, watchState.season, watchState.episode)
           : null;
 
-        const firstEpisode = window.StreamUI.getFirstEpisode(anime);
         const continueHref = watchState
           ? window.StreamUI.watchHref(anime, watchState.season, watchState.episode)
-          : firstEpisode
-            ? window.StreamUI.watchHref(anime, firstEpisode.season, firstEpisode.episode)
-            : window.StreamUI.detailHref(anime);
+          : window.StreamUI.detailHref(anime);
 
-        const genres = (anime.genres || []).slice(0, 3);
+        const poster = getImage(anime, "poster");
+        const episodeTotal = getEpisodeTotal(anime);
 
         return `
           <article class="anime-card">
-            <a class="poster-frame" href="${window.StreamUI.detailHref(anime)}" aria-label="${escapeAttr(anime.title)} details">
-              <img src="${escapeAttr(anime.poster || anime.cover || "")}" alt="${escapeAttr(anime.title)} poster" loading="lazy" decoding="async" />
+            <a class="poster-frame" href="${window.StreamUI.detailHref(anime)}" aria-label="${escapeHtml(anime.title)} details">
+              <img src="${escapeHtml(poster)}" alt="${escapeHtml(anime.title)} poster" loading="lazy" />
+              ${progress ? `<span class="poster-badge">${progress.percent || 0}%</span>` : ""}
             </a>
 
-            <div class="card-topline">
-              <span>${escapeHtml(anime.year || "")}</span>
-              <span>${escapeHtml(anime.episodes || window.StreamUI.flattenEpisodes(anime).length || 0)} tập</span>
-            </div>
+            <div class="card-body">
+              <div class="card-topline">
+                <span>${escapeHtml(anime.year || "")}</span>
+                <span>${episodeTotal || 0} tập</span>
+              </div>
 
-            <h3 class="card-title">${escapeHtml(anime.title)}</h3>
-            <p class="card-description">${escapeHtml(anime.description || "")}</p>
+              <h3 class="card-title">${escapeHtml(anime.title)}</h3>
+              <p class="card-description">${escapeHtml(anime.description || "")}</p>
 
-            <div class="pill-row">
-              ${genres.map((genre) => `<span class="pill">${escapeHtml(genre)}</span>`).join("")}
-            </div>
+              <div class="pill-row card-genres">
+                ${(anime.genres || [])
+                  .slice(0, 3)
+                  .map((genre) => `<span class="pill">${escapeHtml(genre)}</span>`)
+                  .join("")}
+              </div>
 
-            ${
-              progress
-                ? `
-                  <div>
-                    <div class="watch-stamp">Đang xem · ${progress.percent || 0}%</div>
-                    <div class="progress-bar" style="margin-top:10px;">
-                      <span style="width:${progress.percent || 0}%"></span>
+              ${
+                progress
+                  ? `
+                    <div class="resume-block">
+                      <div class="watch-stamp">Resume · ${progress.percent || 0}% watched</div>
+                      <div class="progress-bar">
+                        <span style="width:${progress.percent || 0}%"></span>
+                      </div>
                     </div>
-                  </div>
-                `
-                : ""
-            }
+                  `
+                  : ""
+              }
 
-            <div class="card-actions">
-              <a class="btn btn-primary" href="${continueHref}">
-                ${watchState ? "Tiếp tục" : "Xem"}
-              </a>
-              <a class="btn btn-secondary" href="${window.StreamUI.detailHref(anime)}">Chi tiết</a>
+              <div class="card-actions">
+                <a class="btn btn-primary" href="${continueHref}">
+                  ${watchState ? "Tiếp tục" : "Mở"}
+                </a>
+                <a class="btn btn-secondary" href="${window.StreamUI.detailHref(anime)}">Chi tiết</a>
+              </div>
             </div>
           </article>
         `;
       })
       .join("");
   }
-});
 
-function enhanceGlobalUx() {
-  const header = document.querySelector(".site-header");
-  const setHeaderState = () => header?.classList.toggle("is-scrolled", window.scrollY > 8);
-  setHeaderState();
-  window.addEventListener("scroll", setHeaderState, { passive: true });
+  function bindSearch(items) {
+    if (!searchInput) return;
 
-  const searchInput = document.getElementById("searchInput");
-  if (searchInput) {
+    searchInput.setAttribute("autocomplete", "off");
+    searchInput.setAttribute("spellcheck", "false");
+
+    searchInput.addEventListener("input", () => {
+      const term = normalize(searchInput.value.trim());
+
+      const filtered = items.filter((anime) => {
+        const haystack = normalize([
+          anime.title,
+          anime.description,
+          anime.year,
+          ...(anime.genres || [])
+        ].join(" "));
+
+        return haystack.includes(term);
+      });
+
+      renderGrid(filtered);
+    });
+
     document.addEventListener("keydown", (event) => {
       const target = event.target;
-      const isTyping = target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement || target?.isContentEditable;
+      const isTyping =
+        target instanceof HTMLInputElement ||
+        target instanceof HTMLTextAreaElement ||
+        target?.isContentEditable;
 
       if (event.key === "/" && !isTyping) {
         event.preventDefault();
@@ -234,39 +298,4 @@ function enhanceGlobalUx() {
       }
     });
   }
-
-  createBackToTop();
-}
-
-function createBackToTop() {
-  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const button = document.createElement("button");
-  button.className = "back-to-top";
-  button.type = "button";
-  button.setAttribute("aria-label", "Back to top");
-  button.textContent = "↑";
-  document.body.appendChild(button);
-
-  const toggle = () => button.classList.toggle("is-visible", window.scrollY > 520);
-  toggle();
-
-  window.addEventListener("scroll", toggle, { passive: true });
-  button.addEventListener("click", () => {
-    window.scrollTo({ top: 0, behavior: prefersReducedMotion ? "auto" : "smooth" });
-  });
-}
-
-function escapeHtml(value = "") {
-  return window.StreamUI?.escapeHtml
-    ? window.StreamUI.escapeHtml(value)
-    : String(value)
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
-}
-
-function escapeAttr(value = "") {
-  return escapeHtml(value).replaceAll("`", "&#096;");
-}
+});
